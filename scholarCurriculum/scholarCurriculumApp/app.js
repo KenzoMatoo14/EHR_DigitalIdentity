@@ -19,7 +19,7 @@ var app = express();
 //global variable
 global.contractABIPath = "./smartContract/ScholarCurriculum.abi";
 global.contractByteCodeSource = "./smartContract/ScholarCurriculum.bytecode";
-global.blockchainAddress = "ws://172.18.1.2:8546";
+global.blockchainAddress = "ws://172.18.1.3:8546";
 
 
 // view engine setup

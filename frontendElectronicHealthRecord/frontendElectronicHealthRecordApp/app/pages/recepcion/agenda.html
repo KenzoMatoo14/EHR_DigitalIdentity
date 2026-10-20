@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE UP | Agenda del día</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+
+<body>
+  <header id="topbar" class="fig-topbar"></header>
+
+  <div class="fig-layout">
+    <aside id="sidebar" class="fig-sidebar"></aside>
+
+    <main id="content" class="fig-content">
+      <div class="fig-pagehead">
+        <div>
+          <h1 class="fig-title">Agenda del día</h1>
+          <p class="fig-subtitle">Recepción / enfermería</p>
+        </div>
+        <div class="fig-actions">
+          <button type="button" id="newAppointmentBtn" class="fig-btn-navy">Nueva cita</button>
+          <button type="button" id="registerPatientBtn" class="fig-btn-navy"><span class="plus" aria-hidden="true">+</span> Registrar paciente</button>
+        </div>
+      </div>
+
+      <div id="agenda" class="fig-agenda" aria-label="Agenda del día" aria-live="polite"></div>
+
+    </main>
+  </div>
+
+  <script type="module" src="/js/pages/recepcionAgenda.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+# MySQL TEMPORAL solo para desarrollar el microservicio EHR de forma aislada.
+# Credenciales iguales a Local-Setup.md (paso 8), para que al integrarlo al
+# docker-compose.yml principal los .env no cambien.
+# Puerto del host 3307 porque el 3306 puede estar ocupado por otro MySQL/MariaDB local.
+services:
+  tokphy-mysql-ehr:
+    image: mysql:8
+    container_name: tokphy-mysql-ehr
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pw123
+      MYSQL_DATABASE: tokphydb
+      MYSQL_USER: tokuser
+      MYSQL_PASSWORD: user_pw123
+    ports:
+      - "3307:3306"
+    volumes:
+      - ehr_mysql_data:/var/lib/mysql
+
+volumes:
+  ehr_mysql_data:

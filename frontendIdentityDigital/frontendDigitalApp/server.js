@@ -39,7 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/fetch-proof', async (req, res) => {
   try {
-    const response = await axios.get('http://172.18.1.3:5500/proofd');
+    const response = await axios.get('http://172.18.1.4:5500/proofd');
     res.json(response.data);  // Send the fetched data as a response
   } catch (error) {
     console.error('Error fetching the data:', error);
@@ -58,7 +58,7 @@ app.post('/createDigitalIdentity', async (req, res) => {
       government
     };
 
-    const response = await axios.post('http://172.18.1.3:5500/createDigitalIdentity', requestData, {
+    const response = await axios.post('http://172.18.1.4:5500/createDigitalIdentity', requestData, {
       headers: { 'Content-Type': 'application/json' }
     });
 
@@ -83,7 +83,7 @@ app.post('/linkTokenService', async (req, res) => {
       nameToken
     };
 
-    const response = await axios.post('http://172.18.1.3:5500/linkToken', requestData, {
+    const response = await axios.post('http://172.18.1.4:5500/linkToken', requestData, {
       headers: { 'Content-Type': 'application/json' }
     });
 
@@ -106,7 +106,7 @@ app.get('/consultTokenCreator', async (req, res) => {
     }
 
     // Send a GET request to your desired endpoint with the provided query parameters
-    const response = await axios.get('http://172.18.1.3:5500/consultTokenCreator', {
+    const response = await axios.get('http://172.18.1.4:5500/consultTokenCreator', {
       params: {
         contractAdd,
         contractToken
@@ -130,7 +130,7 @@ app.get('/consultTokens', async (req, res) => {
     }
 
     // Send a GET request to your desired endpoint with the provided query parameters
-    const response = await axios.get('http://172.18.1.3:5500/consultTokens', {
+    const response = await axios.get('http://172.18.1.4:5500/consultTokens', {
       params: {
         contractAdd,
         contractToken
@@ -153,7 +153,7 @@ app.get('/consultNumberToken', async (req, res) => {
     }
 
     // Send a GET request to your desired endpoint with the provided query parameters
-    const response = await axios.get('http://172.18.1.3:5500/consultNumberToken', {
+    const response = await axios.get('http://172.18.1.4:5500/consultNumberToken', {
       params: {
         contractAdd
       }
@@ -175,7 +175,7 @@ app.get('/consultDigitalIdentity', async (req, res) => {
     }
 
     // Send a GET request to your desired endpoint with the provided query parameters
-    const response = await axios.get('http://172.18.1.3:5500/consultDigitalIdentity', {
+    const response = await axios.get('http://172.18.1.4:5500/consultDigitalIdentity', {
       params: {
         contractAdd,
         publicMethod
@@ -285,7 +285,7 @@ app.get('/getInfoUser', async (req, res) => {
     }
 
     // Send a GET request to your desired endpoint with the provided query parameters
-    const response = await axios.get('http://172.18.1.3:5500/getInfoUser', {
+    const response = await axios.get('http://172.18.1.4:5500/getInfoUser', {
       params: {
         contractAdd,
         userAddress

@@ -1,0 +1,505 @@
+/*
+ * app.css — ESTRUCTURA del Figma "ECE UP diseño" (KC0Emp8LPGABVHlths0Zjg) con la PALETA de los demás
+ * frontends del proyecto (frontendBirthCertificate, frontendIdentityDigital, frontendUsersInteface,
+ * frontendScholarCurriculum).
+ *
+ * Layout, medidas, tipografía (Inter) y formas salen del Figma. Los COLORES salen de los otros
+ * frontends, que usan la escala de Tailwind: fondo gray-100, controles y cabeceras gray-200, texto
+ * gray-700, menú activo gray-600, acciones blue-500/600/700, cancelar red-500/600, aro de foco
+ * indigo-500 y círculo de usuario naranja rgb(255,102,0).
+ *
+ * Todos los colores viven en :root: cambiar de paleta = cambiar este bloque.
+ * (Esos frontends también tienen modo oscuro; el Figma no, así que aquí solo está el claro.)
+ */
+
+:root {
+  /* Superficies y bordes (Tailwind gray / white) */
+  --c-page: #f3f4f6;          /* gray-100  fondo de página */
+  --c-surface: #ffffff;       /* white     tarjetas, listas, inputs */
+  --c-surface-2: #e5e7eb;     /* gray-200  barra superior, cabeceras, chips, botón neutro */
+  --c-surface-3: #d1d5db;     /* gray-300  hover de gray-200, píldora de usuario */
+  --c-border: #d1d5db;        /* gray-300 */
+  --c-border-strong: #9ca3af; /* gray-400  borde de inputs */
+
+  /* Texto */
+  --c-text: #000000;
+  --c-text-label: #374151;    /* gray-700 */
+  --c-text-soft: #4b5563;     /* gray-600 */
+  --c-text-muted: #6b7280;    /* gray-500 */
+
+  /* Acciones */
+  --c-accent: #3b82f6;        /* blue-500  botones primarios */
+  --c-accent-hover: #2563eb;  /* blue-600 */
+  --c-brand: #2563eb;         /* blue-600  pestañas y cabeceras de modal (la franja azul del Figma) */
+  --c-brand-strong: #1d4ed8;  /* blue-700 */
+  --c-blue-soft: #dbeafe;     /* blue-100  selección, etiqueta informativa */
+  --c-danger: #ef4444;        /* red-500   cancelar / eliminar */
+  --c-danger-hover: #dc2626;  /* red-600 */
+  --c-focus: #6366f1;         /* indigo-500 aro de foco */
+
+  /* Menú, marca y usuario */
+  --c-nav-active: #4b5563;    /* gray-600  ítem activo del menú */
+  --c-dark: #1f2937;          /* gray-800  cuadro "UP" */
+  --c-avatar: #ff6600;        /* rgb(255,102,0) círculo de usuario */
+
+  /* Estados (mismas familias de Tailwind) */
+  --c-ok-bg: #dcfce7; --c-ok-text: #166534;      /* green-100 / green-800 */
+  --c-warn-bg: #fef9c3; --c-warn-text: #854d0e;  /* yellow-100 / yellow-800 */
+  --c-bad-bg: #fee2e2; --c-bad-text: #991b1b;    /* red-100 / red-800 */
+  --c-info-text: #1e40af;                        /* blue-800 */
+
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md de Tailwind */
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--c-text);
+  background: var(--c-page);
+  letter-spacing: -0.02em; /* el Figma usa -2% en casi todos los textos */
+}
+button, input, select, textarea { font-family: inherit; letter-spacing: inherit; }
+*, *::before, *::after { box-sizing: border-box; }
+
+/* =====================================================================
+   Shell: barra superior + menú lateral
+   ===================================================================== */
+.fig-topbar {
+  height: 69px;
+  background: var(--c-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 6px 0 36px;
+}
+.fig-brand { display: flex; align-items: center; gap: 15px; min-width: 0; }
+.fig-brand-box {
+  width: 33px; height: 33px; flex: none;
+  background: var(--c-dark); color: #fff; border-radius: 10px;
+  display: grid; place-items: center;
+  font-weight: 600; font-size: 15px;
+}
+.fig-brand-title { font-weight: 600; font-size: 15px; line-height: 1.1; white-space: nowrap; }
+.fig-brand-sub { font-weight: 600; font-size: 11px; line-height: 1.1; white-space: nowrap; margin-top: 4px; }
+.fig-topbar-right { display: flex; align-items: center; gap: 12px; flex: none; }
+.fig-date { font-weight: 600; font-size: 14px; white-space: nowrap; color: var(--c-text-label); }
+.fig-user {
+  display: flex; align-items: center; gap: 12px;
+  height: 42px; min-width: 178px;
+  padding: 0 18px 0 6px;
+  background: var(--c-surface-3); border-radius: 22px;
+  border: 0; cursor: pointer;
+  font-weight: 600; font-size: 16px; color: var(--c-text);
+}
+.fig-user:hover { background: var(--c-border-strong); }
+.fig-avatar {
+  width: 29px; height: 29px; flex: none; border-radius: 50%;
+  background: var(--c-avatar); color: #fff;
+  display: grid; place-items: center;
+  font-weight: 700; font-size: 13px;
+}
+
+.fig-layout { display: flex; min-height: calc(100vh - 69px); }
+.fig-sidebar {
+  width: 228px; flex: none;
+  background: var(--c-surface);
+  border-right: 1px solid var(--c-border);
+  padding: 22px 13px;
+}
+.fig-nav-item {
+  display: flex; align-items: center; gap: 16px;
+  height: 40px; padding: 0 16px; margin-bottom: 9px;
+  background: var(--c-surface-2); border-radius: 10px;
+  color: var(--c-text); text-decoration: none;
+  font-weight: 500; font-size: 14px; white-space: nowrap;
+}
+.fig-nav-item:hover { background: var(--c-surface-3); }
+/* Ítem activo = el de los otros frontends: gray-600 con texto claro (los iconos negros se invierten) */
+.fig-nav-item.active { background: var(--c-nav-active); color: var(--c-surface-2); }
+.fig-nav-item.active .fig-nav-icon img { filter: invert(1); }
+.fig-nav-icon { width: 24px; height: 24px; flex: none; display: grid; place-items: center; }
+.fig-nav-icon img { width: 24px; height: 24px; }
+.fig-nav-plus { font-size: 32px; font-weight: 500; line-height: 1; }
+
+/* Tira de navegación para pantallas angostas (el menú lateral se oculta bajo `md`) */
+.fig-mobile-nav { display: flex; gap: 8px; overflow-x: auto; padding: 10px 12px 0; }
+.fig-mobile-nav a {
+  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+  height: 40px; padding: 0 14px; border-radius: 10px;
+  background: var(--c-surface-2); color: var(--c-text); text-decoration: none; font-weight: 500; font-size: 14px;
+}
+.fig-mobile-nav a.active { background: var(--c-nav-active); color: var(--c-surface-2); }
+
+.fig-content { flex: 1; min-width: 0; padding: 36px 31px 31px 33px; }
+@media (max-width: 767px) {
+  .fig-content { padding: 20px 14px 24px; }
+  .fig-sidebar { display: none; }
+  .fig-topbar { padding-left: 14px; }
+  .fig-date, .fig-brand-sub { display: none; }
+  .fig-user { min-width: 0; }
+}
+@media (min-width: 768px) { .fig-mobile-nav { display: none; } }
+
+/* =====================================================================
+   Encabezado de página, botones
+   ===================================================================== */
+.fig-pagehead {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 15px;
+}
+.fig-title { font-weight: 600; font-size: 34px; line-height: 1.1; margin: 0; }
+.fig-subtitle { color: var(--c-text-soft); font-size: 16px; line-height: 1.5; margin: 8px 0 0; }
+.fig-actions { display: flex; gap: 12px; flex-wrap: wrap; padding-top: 1px; }
+
+/* Botones grandes del encabezado ("Nueva cita", "+ Registrar paciente") */
+.fig-btn-navy {
+  height: 47px; padding: 0 20px;
+  background: var(--c-accent); color: #fff;
+  border: 0; border-radius: 10px;
+  font-weight: 700; font-size: 18px; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px; white-space: nowrap;
+}
+.fig-btn-navy:hover { background: var(--c-accent-hover); }
+.fig-btn-navy .plus { font-size: 32px; line-height: 1; font-weight: 700; }
+
+/* Botones de los modales y de los formularios (Aceptar / Cancelar / Eliminar / Pacientes) */
+.fig-btn {
+  height: 62px; min-width: 152px; padding: 0 20px;
+  border: 1px solid transparent; border-radius: 5px;
+  font-size: 20px; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;
+}
+.fig-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.fig-btn-accept { background: var(--c-accent); color: #fff; }                                   /* Aceptar */
+.fig-btn-accept:not(:disabled):hover { background: var(--c-accent-hover); }
+.fig-btn-cancel { background: var(--c-danger); color: #fff; }                                   /* Cancelar / Eliminar */
+.fig-btn-cancel:not(:disabled):hover { background: var(--c-danger-hover); }
+.fig-btn-neutral { background: var(--c-surface-2); color: var(--c-text-label); border-color: var(--c-border); } /* secundario */
+.fig-btn-neutral:not(:disabled):hover { background: var(--c-surface-3); }
+.fig-btn-navy2 { background: var(--c-accent); color: #fff; }
+.fig-btn-navy2:not(:disabled):hover { background: var(--c-accent-hover); }
+.fig-btn-green { background: var(--c-nav-active); color: #fff; }                               /* "Pacientes" del modal de cita */
+.fig-btn-green:not(:disabled):hover { background: var(--c-text-label); }
+
+/* =====================================================================
+   Agenda: columna de horas + filas de personas (frames "Main" y "PacientsTable")
+   ===================================================================== */
+.fig-agenda {
+  background: var(--c-surface);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  overflow-y: auto;
+  max-height: calc(100vh - 220px); /* ocupa el resto de la pantalla como en el Figma */
+  min-height: 320px;
+}
+.fig-slot {
+  display: grid; grid-template-columns: 134px minmax(0, 1fr);
+  height: 52px; align-items: center;
+}
+.fig-slot[data-clickable] { cursor: pointer; }
+.fig-slot[data-clickable]:hover .fig-person { background: var(--c-page); }
+.fig-slot-time { height: 100%; display: flex; align-items: center; padding: 0 5px 0 6px; border-right: 1px solid var(--c-border); }
+.fig-hora {
+  width: 123px; height: 47px; padding: 0 16px;
+  display: flex; align-items: center;
+  background: var(--c-surface-2); color: var(--c-text-label); border-radius: 10px;
+  font-weight: 500; font-size: 20px; line-height: 1.5; white-space: nowrap;
+}
+.fig-hora.now { outline: 2px solid var(--c-accent); }
+.fig-person {
+  height: 100%; padding: 0 10px;
+  display: grid; grid-template-columns: minmax(0, 340px) 32px 90px minmax(0, 1fr);
+  align-items: center; column-gap: 40px;
+}
+.fig-person-name { font-size: 24px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fig-person img { width: 32px; height: 32px; }
+.fig-person-tipo { font-size: 15px; text-align: center; color: var(--c-text-soft); }
+.fig-person-status { display: flex; align-items: center; gap: 14px; justify-content: flex-start; min-width: 0; }
+/* Agenda del médico: motivo de la visita en lugar del estado */
+.fig-motivo { flex: 1; min-width: 0; font-size: 15px; color: var(--c-text-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fig-person-status .fig-link { flex: none; }
+@media (max-width: 1100px) {
+  /* Anchos estrechos: se ocultan el icono de correo y el tipo (secundarios) pero NUNCA el estado
+     ni las acciones ("Atender", "Registrar llegada"…), que son lo que se necesita para trabajar. */
+  .fig-person { grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; }
+  .fig-person > img, .fig-person-tipo { display: none; }
+  .fig-person-name { font-size: 20px; }
+  .fig-person-status { justify-content: flex-end; flex-wrap: nowrap; }
+}
+
+.fig-badge {
+  display: inline-block; padding: 4px 10px; border-radius: 10px;
+  background: var(--c-blue-soft); color: var(--c-info-text);
+  font-size: 13px; font-weight: 500; white-space: nowrap;
+}
+.fig-badge.warn { background: var(--c-warn-bg); color: var(--c-warn-text); }
+.fig-badge.ok { background: var(--c-ok-bg); color: var(--c-ok-text); }
+.fig-badge.bad { background: var(--c-bad-bg); color: var(--c-bad-text); }
+.fig-link { color: var(--c-accent-hover); font-weight: 600; font-size: 14px; text-decoration: none; background: none; border: 0; cursor: pointer; padding: 0; white-space: nowrap; }
+.fig-link:hover { text-decoration: underline; }
+
+/* =====================================================================
+   Página de paciente: pestañas azules (frame "Expediente")
+   ===================================================================== */
+.fig-tabs {
+  margin-top: 23px; height: 65px;
+  display: flex; gap: 5px;
+  background: var(--c-brand); border-radius: 10px 10px 0 0;
+  overflow: visible;
+}
+.fig-tab {
+  width: 157px; height: 65px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--c-brand); color: #fff; text-decoration: none;
+  border-radius: 10px 10px 0 0;
+  font-weight: 600; font-size: 20px; line-height: 1.1; white-space: nowrap;
+}
+.fig-tab.active { transform: translateY(-23px); } /* la pestaña activa sobresale 23px, como en el diseño */
+.fig-tab:not(.active):hover { background: var(--c-brand-strong); }
+.fig-tabbody {
+  padding: 12px 15px 15px;
+  background: var(--c-surface); box-shadow: var(--shadow-md); border-radius: 0 0 10px 10px;
+}
+@media (max-width: 767px) {
+  .fig-tabs { overflow-x: auto; overflow-y: hidden; }
+  .fig-tab { width: 130px; font-size: 16px; }
+  .fig-tab.active { transform: none; background: var(--c-brand-strong); }
+}
+
+/* =====================================================================
+   Consulta médica: tarjetas por sección de la NOM en DOS COLUMNAS
+   (el contenido es el de mi versión anterior; el marco, los botones y las pestañas, los del Figma).
+   Las columnas son explícitas (`.consulta-col`) y no `column-count`: así, al plegar una tarjeta
+   las demás no saltan de columna.
+   ===================================================================== */
+.consulta-cols {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px;
+  align-items: start; padding: 10px 0 0;
+}
+.consulta-col { display: flex; flex-direction: column; min-width: 0; }
+.consulta-h { margin: 8px 0 0; font-size: 18px; font-weight: 600; color: var(--c-text-label); }
+.consulta-card {
+  margin: 0 0 16px;
+  background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 8px; overflow: hidden;
+}
+.consulta-card > summary {
+  cursor: pointer; list-style: none;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 16px; background: var(--c-surface-2);
+  font-weight: 600; font-size: 15px; color: var(--c-text-label);
+}
+.consulta-card > summary::-webkit-details-marker { display: none; }
+.consulta-card > summary .chev { transition: transform 0.2s ease; font-size: 12px; }
+.consulta-card[open] > summary .chev { transform: rotate(90deg); }
+.consulta-card .num { font-family: monospace; font-weight: 400; color: var(--c-text-muted); margin-right: 8px; }
+.consulta-card .card-body { padding: 14px 16px 4px; }
+.consulta-sub { margin: 0 0 12px; padding-left: 12px; border-left: 4px solid var(--c-brand); }
+.consulta-sub-title { margin: 0 0 8px; font-size: 14px; font-weight: 600; }
+.consulta-datos { margin: 0; font-size: 14px; }
+.consulta-datos.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
+.consulta-datos dd { margin: 0 0 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.consulta-datos dd.vacio { color: var(--c-text-muted); font-style: italic; }
+
+/* Vistas de solo lectura (notas, resumen de visita, ficha en la consulta) */
+.view-dt { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--c-text-muted); }
+.view-nested { margin: 4px 0 0 10px; padding-left: 10px; border-left: 2px solid var(--c-border); }
+.view-num { font-family: monospace; color: var(--c-text-muted); margin-right: 4px; }
+@media (max-width: 1000px) {
+  .consulta-cols { grid-template-columns: minmax(0, 1fr); }
+}
+
+.soap-hint { font-size: 13px; color: var(--c-text-soft); }
+.soap-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; }
+@media (max-width: 1000px) { .soap-cols { grid-template-columns: minmax(0, 1fr); } }
+.soap-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; padding: 6px 0 20px; }
+.soap-note { border: 1px solid var(--c-border); border-radius: 5px; padding: 10px 12px; margin-bottom: 8px; background: var(--c-page); }
+.soap-note summary { cursor: pointer; font-size: 14px; }
+.soap-radio { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 15px; cursor: pointer; }
+.soap-radio input { width: 17px; height: 17px; }
+.soap-fieldset { border: 0; padding: 0; margin: 0 0 14px; }
+.soap-fieldset > legend { font-size: 14px; font-weight: 600; padding: 0; margin-bottom: 6px; color: var(--c-text-label); }
+
+/* =====================================================================
+   Controles de formulario (forma del Figma; colores de los otros frontends)
+   ===================================================================== */
+.fig-input {
+  width: 100%; min-height: 45px; padding: 8px 10px;
+  background: var(--c-surface); color: var(--c-text);
+  border: 1px solid var(--c-border-strong); border-radius: 5px;
+  font-size: 16px; line-height: 1.3;
+}
+.fig-input:focus { outline: 2px solid var(--c-focus); outline-offset: 1px; }
+.fig-input[readonly], .fig-input:disabled { background: var(--c-page); }
+textarea.fig-input { min-height: 84px; resize: vertical; }
+select.fig-input {
+  appearance: none; -webkit-appearance: none; padding-right: 34px;
+  background-image: url('/images/chevron.png');
+  background-repeat: no-repeat; background-position: right 10px center; background-size: 14px;
+}
+.fig-input[aria-invalid="true"] { border-color: var(--c-danger); }
+.fig-label { display: block; margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--c-text-label); }
+.fig-error { margin: 3px 0 0; font-size: 12px; color: var(--c-danger-hover); }
+.fig-field { margin-bottom: 12px; min-width: 0; }
+.fig-subgroup { margin: 4px 0 14px; padding: 10px 12px 2px; border: 1px solid var(--c-border); border-radius: 5px; }
+.fig-subgroup > legend { padding: 0 6px; font-size: 13px; font-weight: 600; color: var(--c-text-label); }
+.fig-counter { text-align: right; font-size: 11px; color: var(--c-text-muted); }
+
+/* =====================================================================
+   Modales (frames "RegistrarPaciente", "Pacientes", "CitaPaciente")
+   La página de fondo se atenúa como en el diseño.
+   ===================================================================== */
+.fig-overlay {
+  position: fixed; inset: 0; z-index: 60; overflow-y: auto;
+  background: rgba(243, 244, 246, 0.7);
+  padding: 107px 16px 32px;
+}
+.fig-modal {
+  width: min(1148px, 100%); margin: 0 auto;
+  background: var(--c-surface); border-radius: 10px;
+  overflow: hidden; border: 1px solid var(--c-border); box-shadow: var(--shadow-md);
+}
+.fig-modal-head {
+  height: 65px; padding: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--c-brand); color: #fff;
+  font-weight: 600; font-size: 20px;
+}
+.fig-modal-x {
+  width: 48px; height: 48px; border: 0; border-radius: 5px;
+  background: var(--c-surface-2); color: var(--c-text-label); cursor: pointer;
+  font-size: 32px; font-weight: 600; line-height: 1;
+}
+.fig-modal-x:hover { background: var(--c-surface-3); }
+.fig-modal-body { padding: 16px 38px 30px; }
+.fig-mrow {
+  display: grid; grid-template-columns: 215px minmax(0, 1fr);
+  align-items: center; gap: 16px; margin-bottom: 30px; max-width: 920px;
+}
+.fig-mrow.top { align-items: start; }
+.fig-mlabel { font-size: 20px; line-height: 1.1; color: var(--c-text-label); }
+.fig-mlabel .req { color: var(--c-danger); }
+.fig-mstack { margin-bottom: 18px; max-width: 920px; }
+.fig-mstack .fig-mlabel { margin-bottom: 8px; display: block; }
+.fig-mrow .fig-input, .fig-mstack .fig-input { font-size: 20px; min-height: 45px; }
+.fig-mrow textarea.fig-input, .fig-mstack textarea.fig-input { min-height: 62px; }
+.fig-inline { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.fig-inline .fig-input { width: auto; }
+.fig-modal-buttons { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 14px; }
+.fig-modal-error { color: var(--c-danger-hover); margin: 0 0 12px; font-size: 15px; }
+@media (max-width: 767px) {
+  .fig-overlay { padding-top: 24px; }
+  .fig-modal-body { padding: 14px 16px 24px; }
+  .fig-mrow { grid-template-columns: minmax(0, 1fr); gap: 6px; margin-bottom: 18px; }
+}
+
+/* Modal "Registrar nuevo paciente": selector CURP / ID institucional / A mano y búsqueda en ChainIDentity */
+.fig-modes { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--c-border-strong); border-radius: 5px; overflow: hidden; justify-self: start; }
+.fig-mode {
+  min-height: 45px; padding: 0 18px; border: 0; border-right: 1px solid var(--c-border-strong);
+  background: var(--c-surface); color: var(--c-text-label); font-size: 18px; cursor: pointer;
+}
+.fig-mode:last-child { border-right: 0; }
+.fig-mode:hover { background: var(--c-surface-2); }
+.fig-mode[aria-checked="true"] { background: var(--c-brand); color: #fff; }
+.fig-mode:focus-visible { outline: 2px solid var(--c-focus); outline-offset: -2px; }
+.fig-lookup-input { flex: 1 1 220px; }
+.fig-inline .fig-lookup-input { width: auto; min-width: 0; }
+.fig-chain-status { margin: -18px 0 20px; font-size: 15px; color: var(--c-text-soft); max-width: 920px; }
+.fig-chain-status.warn { color: var(--c-warn-text); }
+.fig-chain-status.bad { color: var(--c-danger-hover); }
+.fig-chain-note {
+  margin: 0 0 24px; padding: 12px 16px; max-width: 920px;
+  background: var(--c-blue-soft); color: var(--c-info-text); border-radius: 5px; font-size: 15px; line-height: 1.45;
+}
+.fig-chain-note ul { margin: 6px 0 0; padding-left: 20px; color: var(--c-warn-text); }
+.fig-candidates { margin: -10px 0 24px; max-width: 920px; font-size: 15px; color: var(--c-text-label); }
+.fig-candidates p { margin: 0 0 8px; }
+.fig-candidate {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 16px; align-items: center;
+  width: 100%; min-height: 48px; padding: 6px 12px; margin-bottom: 4px; text-align: left;
+  background: var(--c-surface-2); border: 0; border-radius: 2px; font-size: 16px; cursor: pointer;
+}
+.fig-candidate:hover { background: var(--c-surface-3); }
+@media (max-width: 767px) {
+  .fig-chain-status, .fig-candidates { margin-top: 0; }
+  .fig-candidate { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+/* Lista de pacientes dentro del modal "Pacientes" */
+.fig-results {
+  min-height: 300px; max-height: 420px; overflow-y: auto;
+  background: var(--c-page); border: 1px solid var(--c-border-strong); border-radius: 5px; padding: 12px 16px;
+  margin-bottom: 20px;
+}
+.fig-result {
+  display: grid; grid-template-columns: 130px minmax(0, 1fr) 32px 90px; align-items: center; column-gap: 24px;
+  height: 52px; padding: 0 10px; margin-bottom: 4px;
+  background: var(--c-surface-2); border-radius: 2px; cursor: pointer;
+}
+.fig-result:hover { background: var(--c-surface-3); }
+.fig-result[aria-selected="true"] { background: var(--c-blue-soft); outline: 2px solid var(--c-accent); }
+.fig-result .idn { font-size: 20px; }
+.fig-result .nm { font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fig-result img { width: 28px; height: 28px; }
+.fig-result .tp { font-size: 14px; text-align: center; }
+
+/* =====================================================================
+   Tarjetas, toasts, diálogo de confirmación
+   ===================================================================== */
+.fig-card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 10px; box-shadow: var(--shadow-md); }
+
+#toast-root {
+  position: fixed; right: 1rem; bottom: 1rem; z-index: 100;
+  display: flex; flex-direction: column; gap: 0.5rem; max-width: 22rem;
+}
+.fig-toast { padding: 12px 16px; border-radius: 10px; font-size: 14px; color: #fff; background: var(--c-brand); box-shadow: var(--shadow-md); }
+.fig-toast.success { background: var(--c-ok-text); }
+.fig-toast.error { background: var(--c-danger-hover); }
+
+dialog.ece-dialog {
+  border: none; border-radius: 10px; padding: 0;
+  max-width: 28rem; width: calc(100% - 2rem);
+  background: var(--c-surface); color: var(--c-text);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); overflow: hidden;
+}
+dialog.ece-dialog::backdrop { background: rgba(243, 244, 246, 0.7); }
+dialog.ece-dialog .dlg-head { background: var(--c-brand); color: #fff; font-weight: 600; font-size: 18px; padding: 14px 20px; }
+dialog.ece-dialog .dlg-body { padding: 20px; font-size: 15px; }
+dialog.ece-dialog .dlg-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 0 20px 20px; }
+dialog.ece-dialog .fig-btn { height: 44px; min-width: 110px; font-size: 16px; }
+
+/* Resumen de solo lectura (vistas de notas) */
+details.ece-section > summary { cursor: pointer; list-style: none; }
+details.ece-section > summary::-webkit-details-marker { display: none; }
+
+/* =====================================================================
+   Pestaña "Ficha de datos": 4 columnas (los campos salen del Excel, ver fichaTab.js)
+   ===================================================================== */
+.ficha-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 10px; padding: 15px 0 0; }
+.ficha-grid .fig-label { font-size: 15px; }
+.ficha-grid .fig-input { min-height: 46px; }
+.ficha-actions { padding: 18px 0 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+@media (max-width: 1000px) { .ficha-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .ficha-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* =====================================================================
+   Móvil (≤ 767 px): el Figma solo define escritorio; esto es adaptación mía
+   ===================================================================== */
+@media (max-width: 767px) {
+  .fig-brand-title { display: none; }               /* solo logo + usuario para que quepan */
+  .fig-topbar-right { min-width: 0; }
+  .fig-user { max-width: 100%; }
+  .fig-user > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .fig-slot { grid-template-columns: 100px minmax(0, 1fr); height: auto; min-height: 52px; }
+  .fig-slot-time { padding: 6px 4px 6px 6px; align-items: flex-start; }
+  .fig-hora { width: 90px; height: 40px; padding: 0 10px; font-size: 16px; }
+  .fig-person { grid-template-columns: minmax(0, 1fr); height: auto; padding: 8px; row-gap: 4px; }
+  .fig-person-name { font-size: 18px; white-space: normal; }
+  .fig-person-status { flex-wrap: wrap; gap: 6px 10px; }
+  .fig-motivo { white-space: normal; flex-basis: 100%; }
+  .fig-actions { width: 100%; }
+  .fig-actions .fig-btn-navy { flex: 1; }
+}

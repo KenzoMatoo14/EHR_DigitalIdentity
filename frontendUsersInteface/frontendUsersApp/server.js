@@ -55,7 +55,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/fetch-proof', async (req, res) => {
   try {
-    const response = await axios.get('http://172.18.1.3:5500/proofu');
+    const response = await axios.get('http://172.18.1.4:5500/proofu');
     res.json(response.data);  // Send the fetched data as a response
   } catch (error) {
     console.error('Error fetching the data:', error);
@@ -74,7 +74,7 @@ app.post('/createUser', async (req, res) => {
 
     console.log(requestData);
 
-    const response = await axios.post('http://172.18.1.3:5500/createUser', requestData, {
+    const response = await axios.post('http://172.18.1.4:5500/createUser', requestData, {
       headers: { 'Content-Type': 'application/json' }
     });
 
@@ -107,7 +107,7 @@ app.post('/registerUser', async (req, res) => {
     };
     console.log(requestData);
 
-    const response = await axios.post('http://172.18.1.3:5500/registerUser', requestData, {
+    const response = await axios.post('http://172.18.1.4:5500/registerUser', requestData, {
       headers: { 'Content-Type': 'application/json' }
     });
 
@@ -130,7 +130,7 @@ app.get('/getInfoUser', async (req, res) => {
     }
 
     // Send a GET request to your desired endpoint with the provided query parameters
-    const response = await axios.get('http://172.18.1.3:5500/getInfoUser', {
+    const response = await axios.get('http://172.18.1.4:5500/getInfoUser', {
       params: {
         contractAdd,
         userAddress
@@ -154,7 +154,7 @@ app.get('/consultuser', async (req, res) => {
     }
 
     // Send a GET request to your desired endpoint with the provided query parameters
-    const response = await axios.get('http://172.18.1.3:5500/consultuser', {
+    const response = await axios.get('http://172.18.1.4:5500/consultuser', {
       params: {
         contractAdd,
         publicMethod
@@ -399,8 +399,8 @@ app.get('/api/checkUsersTable', async (req, res) => {
   try {
     const [rows] = await pool.query(`
       SELECT COUNT(*) as count
-      FROM information_schema.tables
-      WHERE table_schema = DATABASE() AND table_name = 'users'
+      FROM users
+      WHERE type = 'Goverment'
     `);
 
     if (rows[0].count > 0) {

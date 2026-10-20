@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE UP | Agenda del día</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+
+<body>
+  <header id="topbar" class="fig-topbar"></header>
+
+  <div class="fig-layout">
+    <aside id="sidebar" class="fig-sidebar"></aside>
+
+    <main id="content" class="fig-content">
+      <div class="fig-pagehead">
+        <div>
+          <h1 class="fig-title">Agenda del día</h1>
+          <p class="fig-subtitle">Médico general · pacientes que ya llegaron, en el orden de su cita</p>
+        </div>
+        <div class="fig-actions">
+          <button type="button" id="addConsultaBtn" class="fig-btn-navy"><span class="plus" aria-hidden="true">+</span> Agregar consulta</button>
+        </div>
+      </div>
+
+      <div id="pendingList" class="fig-agenda" style="min-height:0;max-height:none" aria-live="polite"></div>
+
+      <h2 class="fig-subtitle" style="font-weight:600;color:var(--c-text);margin:28px 0 8px">Atendidos hoy</h2>
+      <div id="attendedList" class="fig-agenda" style="min-height:0;max-height:none"></div>
+    </main>
+  </div>
+
+  <script type="module" src="/js/pages/medicoAgenda.js"></script>
+</body>
+
+</html>

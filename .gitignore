@@ -3,6 +3,7 @@ birthCertificate/\birthCertificateApp/node_modules/
 digitalIdentity/digitaldentityApp/node_modules/
 users/usersApp/node_modules/
 scholarCurriculum/scholarCurriculumApp/node_modules
+electronicHealthRecord/electronicHealthRecordApp/node_modules/
 frontendIdentityDigital/frontendDigitalApp/node_modules/
 frontendBirthCertificate/frontendBirthCertificateApp/node_modules/
 frontendUsersInteface/frontendUsersApp/node_modules/
@@ -12,3 +13,17 @@ frontendIdentityDigital/frontendDigitalApp/app/pages/config/firebase-credentials
 frontendBirthCertificate/frontendBirthCertificateApp/app/pages/config/firebase-credentials.json
 frontendScholarCurriculum/frontendScholarCurriculumApp/app/pages/config/firebase-credentials.json
 *.env
+
+# Datos de la blockchain local de Ganache (--db ./ganache). El segundo directorio
+# "ganache\r" lo crea startApp cuando se ejecuta con saltos de línea CRLF.
+ganache/ganache*/
+
+# Copias sueltas de assets exportados de Figma (los buenos están en public/images/)
+/avatar.svg
+/chevron.png
+/icon-inicio.svg
+/icon-pacientes.png
+/icon-triage.svg
+
+# Configuración local de Claude Code
+.claude/settings.local.json

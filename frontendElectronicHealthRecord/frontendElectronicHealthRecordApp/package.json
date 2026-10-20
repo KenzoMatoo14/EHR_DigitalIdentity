@@ -1,0 +1,19 @@
+{
+  "name": "frontend-electronic-health-record",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Frontend del Expediente Clínico Electrónico (ECE) - Departamento Médico UP. Versión inicial: solo interfaz, datos simulados.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "live": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18.11"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.20.0",
+    "express": "^4.21.1"
+  }
+}

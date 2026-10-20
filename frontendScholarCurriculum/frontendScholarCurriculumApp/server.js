@@ -42,7 +42,7 @@ app.get('/dashboard', (req, res) => {
 
 app.get('/fetch-proof', async (req, res) => {
   try {
-    const response = await axios.get('http://172.18.1.3:5500/proof');
+    const response = await axios.get('http://172.18.1.4:5500/proof');
     res.json(response.data);  // Send the fetched data as a response
   } catch (error) {
     console.error('Error fetching the data:', error);
@@ -69,7 +69,7 @@ app.post('/createCurriculum', async (req, res) => {
 
 
 
-    const response = await axios.post('http://172.18.1.3:5500/createCurriculum', requestData, {
+    const response = await axios.post('http://172.18.1.4:5500/createCurriculum', requestData, {
       headers: { 'Content-Type': 'application/json' }
     });
 
@@ -91,7 +91,7 @@ app.post('/setAddress', async (req, res) => {
       government,
       publicMethod
     };
-    const response = await axios.post('http://172.18.1.3:5500/setAddress', requestData, {
+    const response = await axios.post('http://172.18.1.4:5500/setAddress', requestData, {
       headers: { 'Content-Type': 'application/json' }
     });
 
@@ -112,7 +112,7 @@ app.get('/consult', async (req, res) => {
     }
 
     // Send a GET request to your desired endpoint with the provided query parameters
-    const response = await axios.get('http://172.18.1.3:5500/consult', {
+    const response = await axios.get('http://172.18.1.4:5500/consult', {
       params: {
         contractAdd,
         publicMethod
@@ -220,7 +220,7 @@ app.get('/getInfoUser', async (req, res) => {
     }
 
     // Send a GET request to your desired endpoint with the provided query parameters
-    const response = await axios.get('http://172.18.1.3:5500/getInfoUser', {
+    const response = await axios.get('http://172.18.1.4:5500/getInfoUser', {
       params: {
         contractAdd,
         userAddress
@@ -627,7 +627,7 @@ app.get('/numberOfAchievements', async (req, res) => {
     }
 
     // Simulating a response (replace with actual logic if needed)
-    const response = await axios.get('http://172.18.1.3:5500/numberOfAchievements', {
+    const response = await axios.get('http://172.18.1.4:5500/numberOfAchievements', {
       params: { contractAdd }
     });
 
@@ -647,7 +647,7 @@ app.get('/consultCertificate', async (req, res) => {
     }
 
     // Simulating a response (replace with actual logic if needed)
-    const response = await axios.get('http://172.18.1.3:5500/consultCertificate', {
+    const response = await axios.get('http://172.18.1.4:5500/consultCertificate', {
       params: { contractAdd, id }
     });
 
@@ -676,7 +676,7 @@ app.post('/addAchievement', async (req, res) => {
     console.log("Received data:", requestData);
 
     // Send request to an external service (like your Solidity contract or another API)
-    const response = await axios.post('http://172.18.1.3:5500/addAchievement', requestData, {
+    const response = await axios.post('http://172.18.1.4:5500/addAchievement', requestData, {
       headers: { 'Content-Type': 'application/json' },
     });
 

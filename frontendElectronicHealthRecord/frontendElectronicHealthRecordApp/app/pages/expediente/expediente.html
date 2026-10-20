@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE UP | Expediente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+
+<body>
+  <header id="topbar" class="fig-topbar"></header>
+
+  <div class="fig-layout">
+    <aside id="sidebar" class="fig-sidebar"></aside>
+
+    <main id="content" class="fig-content" style="padding-bottom:0">
+      <!-- Encabezado del paciente: nombre en mayúsculas + número de expediente (Figma "Expediente") -->
+      <div id="patientHead"></div>
+
+      <!-- Barra azul de pestañas: Ficha de datos · Antecedentes · Consultas · Interconsultas -->
+      <nav id="tabs" class="fig-tabs hidden" aria-label="Secciones del expediente"></nav>
+
+      <section id="tabBody" class="fig-tabbody" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <script type="module" src="/js/pages/expediente.js"></script>
+</body>
+
+</html>

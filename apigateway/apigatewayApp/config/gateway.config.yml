@@ -13,7 +13,7 @@ apiEndpoints:
     paths: '/proof'    
 
   birthcertificateproofB:
-    host: '172.18.1.3'
+    host: '172.18.1.4'
     paths: '/proof'    
 
   birthcertificateCreate:
@@ -21,7 +21,7 @@ apiEndpoints:
     paths: '/create' 
 
   birthcertificateCreateB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/create' 
 
   birthcertificateSetAddress:
@@ -29,7 +29,7 @@ apiEndpoints:
     paths: '/setAddress' 
 
   birthcertificateSetAddressB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/setAddress' 
 
   birthcertificateConsult:
@@ -37,7 +37,7 @@ apiEndpoints:
     paths: '/consult' 
 
   birthcertificateConsultB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/consult' 
 
   birthcertificatPrivate:
@@ -45,7 +45,7 @@ apiEndpoints:
     paths: '/consultPrivates' 
 
   birthcertificatPrivateB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/consultPrivates' 
 
   # digital identity services
@@ -56,7 +56,7 @@ apiEndpoints:
     paths: '/createDigitalIdentity'    
 
   didentityCreateB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/createDigitalIdentity'        
 
 
@@ -66,7 +66,7 @@ apiEndpoints:
     paths: '/linkToken'    
 
   didentitylinkTokenB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/linkToken'       
 
 
@@ -77,7 +77,7 @@ apiEndpoints:
     paths: '/consultTokens'    
 
   didentityconsultTokensB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/consultTokens'       
 
 
@@ -88,7 +88,7 @@ apiEndpoints:
     paths: '/consultTokenCreator'    
 
   didentityconsultTokenCreatorB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/consultTokenCreator'      
 
 
@@ -98,7 +98,7 @@ apiEndpoints:
     paths: '/consultCreatorIsGovernment'    
 
   didentityconsultCreatorIsGovernmentB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/consultCreatorIsGovernment'      
 
 
@@ -108,7 +108,7 @@ apiEndpoints:
     paths: '/consultNumberToken'    
 
   didentityconsultNumberTokenB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/consultNumberToken'    
 
   #consult parameters of digital contructor
@@ -117,7 +117,7 @@ apiEndpoints:
     paths: '/consultDigitalIdentity'    
 
   didentityConsultB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/consultDigitalIdentity'  
 
   #proof method
@@ -126,7 +126,7 @@ apiEndpoints:
     paths: '/proofd'    
 
   didentityProofB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/proofd'  
 
 
@@ -140,7 +140,7 @@ apiEndpoints:
     paths: '/createUser'    
 
   usersCreateB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/createUser'    
 
   #Consult
@@ -149,7 +149,7 @@ apiEndpoints:
     paths: '/consultuser'    
 
   usersConsultB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/consultuser'  
   
 
@@ -159,7 +159,7 @@ apiEndpoints:
     paths: '/getInfoUser'    
 
   usersGetInfoB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/getInfoUser' 
 
 
@@ -169,7 +169,7 @@ apiEndpoints:
     paths: '/registerUser'    
 
   usersRegisterB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/registerUser'  
 
 
@@ -179,7 +179,7 @@ apiEndpoints:
     paths: '/proofu'    
 
   usersProofB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/proofu'  
 
 
@@ -191,7 +191,7 @@ apiEndpoints:
     paths: '/proofsc'    
 
   scholarcurriculumProofB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/proofsc'
 
   #Create curriculum
@@ -200,7 +200,7 @@ apiEndpoints:
     paths: '/createCurriculum'    
 
   scholarcurriculumCreateB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/createCurriculum'
 
 
@@ -210,7 +210,7 @@ apiEndpoints:
     paths: '/addAchievement'    
 
   scholarcurriculumaddAchievementB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/addAchievement'
 
   #Consult achievement to curriculum
@@ -219,7 +219,7 @@ apiEndpoints:
     paths: '/consultCertificate'    
 
   scholarcurriculumconsultCertificateB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/consultCertificate'
 
   #Get nomber of achievement in curriculum
@@ -228,8 +228,56 @@ apiEndpoints:
     paths: '/numberOfAchievements'    
 
   scholarcurriculumnumberOfAchievementsB:
-    host:  '172.18.1.3'
+    host:  '172.18.1.4'
     paths: '/numberOfAchievements'
+
+
+# Electronic Health Record services (base de datos convencional MySQL, sin blockchain)
+
+  #Guardar / consultar Ficha de identificación (POST crea o actualiza, GET consulta por ?curp=)
+  ehrFichaIdentificacion:
+    host:  localhost
+    paths: '/fichaIdentificacion'
+
+  ehrFichaIdentificacionB:
+    host:  '172.18.1.8'
+    paths: '/fichaIdentificacion'
+
+  #Guardar / consultar Antecedentes (POST crea o actualiza, GET consulta por ?curp=)
+  ehrAntecedentes:
+    host:  localhost
+    paths: '/antecedentes'
+
+  ehrAntecedentesB:
+    host:  '172.18.1.4'
+    paths: '/antecedentes'
+
+  #Agregar / consultar Notas SOAP (POST agrega, GET lista por ?curp=; no se editan)
+  ehrNotaSoap:
+    host:  localhost
+    paths: '/notaSoap'
+
+  ehrNotaSoapB:
+    host:  '172.18.1.4'
+    paths: '/notaSoap'
+
+  #Buscar pacientes (GET ?q= nombre, CURP o folio; solo lectura)
+  ehrPacientes:
+    host:  localhost
+    paths: '/pacientes'
+
+  ehrPacientesB:
+    host:  '172.18.1.4'
+    paths: '/pacientes'
+
+  #Buscar datos de una persona en ChainIDentity para prellenar el registro (GET ?curp= o ?idInstitucional=; solo lectura)
+  ehrChainIdentity:
+    host:  localhost
+    paths: '/chainIdentity'
+
+  ehrChainIdentityB:
+    host:  '172.18.1.4'
+    paths: '/chainIdentity'
 
 
 
@@ -238,16 +286,21 @@ serviceEndpoints:
     url: 'https://httpbin.org'
 
   scholarcurriculum:
-    url: 'http://172.18.1.7:5504'
+    url: 'http://172.18.1.8:5504'
 
   users:
-    url: 'http://172.18.1.6:5503'
+    url: 'http://172.18.1.7:5503'
 
   didentity:
-    url: 'http://172.18.1.5:5502'
+    url: 'http://172.18.1.6:5502'
 
   birthcertificate:
-    url: 'http://172.18.1.4:5501'   #this is the name of the host   
+    url: 'http://172.18.1.5:5501'   #this is the name of the host
+
+  electronichealthrecord:
+    # El EHR corre en la máquina (no en un contenedor). Dentro del contenedor del Gateway "localhost" es el
+    # propio contenedor; host.docker.internal es el nombre que Docker Desktop da a la máquina anfitriona.
+    url: 'http://host.docker.internal:5505'
 
 policies:
   - basic-auth
@@ -355,6 +408,26 @@ pipelines:
     # - key-auth:
       - proxy:
           - action:
-              serviceEndpoint: scholarcurriculum 
+              serviceEndpoint: scholarcurriculum
+              changeOrigin: true
+
+  ehrPipeline:
+    apiEndpoints:
+      - ehrFichaIdentificacion
+      - ehrFichaIdentificacionB
+      - ehrAntecedentes
+      - ehrAntecedentesB
+      - ehrNotaSoap
+      - ehrNotaSoapB
+      - ehrPacientes
+      - ehrPacientesB
+      - ehrChainIdentity
+      - ehrChainIdentityB
+    policies:
+    # Uncomment `key-auth:` when instructed to in the Getting Started guide.
+    # - key-auth:
+      - proxy:
+          - action:
+              serviceEndpoint: electronichealthrecord
               changeOrigin: true
 

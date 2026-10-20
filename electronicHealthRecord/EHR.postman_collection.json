@@ -1,0 +1,665 @@
+{
+  "info": {
+    "name": "EHR - Expediente Clínico (vía Gateway)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Pruebas del microservicio electronicHealthRecord a través del API Gateway (:5500). Llave del paciente = CURP. Correr en orden: 1 -> 6 y luego Errores."
+  },
+  "variable": [
+    {
+      "key": "gateway",
+      "value": "http://localhost:5500"
+    },
+    {
+      "key": "curp",
+      "value": "MALK050614HJCTPN09"
+    },
+    {
+      "key": "folio",
+      "value": "0263328"
+    }
+  ],
+  "item": [
+    {
+      "name": "Camino feliz",
+      "item": [
+        {
+          "name": "1. Registrar paciente / guardar ficha",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
+                  "pm.test('Regresa la misma CURP', () => pm.expect(pm.response.json().ficha.curp).to.eql(pm.collectionVariables.get('curp')));",
+                  "pm.test('Fecha guardada como aaaammdd', () => pm.expect(pm.response.json().ficha.fechaNacimiento).to.eql('20050614'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/fichaIdentificacion",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "fichaIdentificacion"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"folio\": \"{{folio}}\",\n  \"nombre\": \"Kenzo\",\n  \"apellidoP\": \"Matoo\",\n  \"apellidoM\": \"López\",\n  \"fechaNacimiento\": \"2005-06-14\",\n  \"entidadNacimiento\": 14,\n  \"sexo\": 1,\n  \"nacionalidad\": 1,\n  \"entidadResidencia\": 14,\n  \"municipioResidencia\": \"039\",\n  \"localidadResidencia\": \"0001\",\n  \"grupoEtnico\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2. Consultar ficha",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
+                  "pm.test('Catálogos regresan como id', () => pm.expect(pm.response.json().ficha.sexo).to.eql(1));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway}}/fichaIdentificacion?curp={{curp}}",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "fichaIdentificacion"
+              ],
+              "query": [
+                {
+                  "key": "curp",
+                  "value": "{{curp}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Guardar antecedentes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
+                  "pm.test('Booleano guardado', () => pm.expect(pm.response.json().antecedentes.consumoSustancias.usoAlcohol).to.eql(true));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/antecedentes",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"antecedentesHeredoFamiliares\": \"Madre con diabetes tipo 2\",\n  \"antecedentesPersonalesPatologicos\": \"Asma en la infancia\",\n  \"antecedentesPersonalesNoPatologicos\": \"Ejercicio 3 veces por semana\",\n  \"consumoSustancias\": {\n    \"usoTabaco\": false,\n    \"usoAlcohol\": true\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4. Consultar antecedentes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway}}/antecedentes?curp={{curp}}",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ],
+              "query": [
+                {
+                  "key": "curp",
+                  "value": "{{curp}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Agregar nota SOAP (todos los paneles)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
+                  "pm.test('Temperatura guardada', () => pm.expect(pm.response.json().nota.signosVitales.temperatura).to.eql(36.5));",
+                  "pm.test('Fecha y hora automáticas', () => { const n = pm.response.json().nota; pm.expect(n.fechaServicio).to.have.lengthOf(10); pm.expect(n.horaServicio).to.have.lengthOf(5); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/notaSoap",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "notaSoap"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"motivoAtencion\": \"Dolor de cabeza\",\n  \"padecimientoActual\": \"Cefalea frontal de 2 días\",\n  \"evolucionCuadroClinico\": \"Sin cambios desde ayer\",\n  \"interrogatorioAparatosSistemas\": \"Sin datos relevantes\",\n  \"resumenInterrogatorio\": \"Cefalea tensional probable\",\n  \"tratamientoPrevio\": {\n    \"tratamientoPrevioConvencional\": \"Paracetamol 500 mg\",\n    \"tratamientoPrevioAlternativo\": \"Ninguno\",\n    \"tratamientoPrevioTradicional\": \"Té de manzanilla\"\n  },\n  \"signosVitales\": {\n    \"temperatura\": 36.5,\n    \"tensionArterial\": \"120/80\",\n    \"frecuenciaCardiaca\": 72,\n    \"frecuenciaRespiratoria\": 16\n  },\n  \"peso\": 70.5,\n  \"talla\": 1.75,\n  \"antecedentesHeredoFamiliares\": \"Madre con diabetes tipo 2\",\n  \"antecedentesPersonalesPatologicos\": \"Asma en la infancia\",\n  \"antecedentesPersonalesNoPatologicos\": \"Ejercicio 3 veces por semana\",\n  \"consumoSustancias\": {\n    \"usoTabaco\": false,\n    \"usoAlcohol\": true,\n    \"usoOtrasSustancias\": false\n  },\n  \"habitusExterior\": \"Consciente, orientado, cooperador\",\n  \"datosExploracionFisica\": {\n    \"cabeza\": \"Normocéfalo\",\n    \"cuello\": \"Sin adenopatías\",\n    \"torax\": \"Campos pulmonares limpios\",\n    \"abdomen\": \"Blando, no doloroso\",\n    \"miembros\": \"Íntegros\",\n    \"genitales\": \"No explorados\"\n  },\n  \"resumenExploracionFisica\": \"Exploración sin alteraciones\",\n  \"estadoMental\": \"Alerta\",\n  \"diagnosticosProblemasClinicos\": \"Cefalea tensional\",\n  \"pronostico\": \"Bueno para la vida y la función\",\n  \"indicacionTerapeutica\": \"Reposo e hidratación\",\n  \"tratamientoIndicacionesMedicas\": \"Paracetamol vía oral\",\n  \"tratamientoIndicaciones\": {\n    \"dosis\": \"500 mg\",\n    \"viaAdministracion\": \"Oral\",\n    \"periodicidad\": \"Cada 8 h por 3 días\"\n  },\n  \"tratamiento\": \"Analgésico y reposo\",\n  \"resultadosPreviosEstudios\": {\n    \"laboratorio\": \"BH normal (2025)\",\n    \"gabinete\": \"Ninguno\",\n    \"otros\": \"Ninguno\"\n  },\n  \"resultadosActualesEstudios\": {\n    \"laboratorio\": \"No se solicitaron\",\n    \"gabinete\": \"Ninguno\",\n    \"otros\": \"Ninguno\"\n  },\n  \"resultadosEstudiosAuxiliares\": \"Ninguno\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. Consultar notas del paciente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
+                  "pm.test('Hay al menos una nota', () => pm.expect(pm.response.json().notas.length).to.be.above(0));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway}}/notaSoap?curp={{curp}}",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "notaSoap"
+              ],
+              "query": [
+                {
+                  "key": "curp",
+                  "value": "{{curp}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7. Buscar pacientes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
+                  "pm.test('Encuentra al paciente de la colección', () => pm.expect(pm.response.json().pacientes.map(p => p.curp)).to.include(pm.collectionVariables.get('curp')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway}}/pacientes?q=matoo",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "pacientes"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "matoo"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Errores (validación)",
+      "item": [
+        {
+          "name": "Nota de una CURP no registrada -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/notaSoap",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "notaSoap"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"XEXX010101HNEXXXA4\",\n  \"motivoAtencion\": \"Prueba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Nota vacía -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/notaSoap",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "notaSoap"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Temperatura fuera de DECIMAL(3,1) -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/notaSoap",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "notaSoap"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"signosVitales\": {\n    \"temperatura\": 365\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Tensión arterial con formato inválido -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/notaSoap",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "notaSoap"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"signosVitales\": {\n    \"tensionArterial\": \"alta\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Ficha sin CURP -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/fichaIdentificacion",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "fichaIdentificacion"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"folio\": \"1111111\",\n  \"nombre\": \"Sin\",\n  \"apellidoP\": \"Curp\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Folio de otro paciente -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/fichaIdentificacion",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "fichaIdentificacion"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"RUAA040120MJCZNNA1\",\n  \"folio\": \"{{folio}}\",\n  \"nombre\": \"Ana\",\n  \"apellidoP\": \"Ruiz\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Booleano inválido en antecedentes -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/antecedentes",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"consumoSustancias\": {\n    \"usoTabaco\": \"quizas\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Antecedentes de CURP no registrada -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway}}/antecedentes?curp=XEXX010101HNEXXXA4",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ],
+              "query": [
+                {
+                  "key": "curp",
+                  "value": "XEXX010101HNEXXXA4"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "CURP mal formada -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway}}/notaSoap?curp=ABC",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "notaSoap"
+              ],
+              "query": [
+                {
+                  "key": "curp",
+                  "value": "ABC"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
