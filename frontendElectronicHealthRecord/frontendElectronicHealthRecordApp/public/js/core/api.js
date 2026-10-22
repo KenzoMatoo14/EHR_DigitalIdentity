@@ -515,14 +515,15 @@ export async function updatePatientFicha(patientId, values) {
   return viewPatient(patient, user);
 }
 
-/** Quita del objeto del backend lo que no es del Excel (curp, fechas de la tabla). */
-function withoutMeta({ curp, actualizadoEn, creadoEn, ...data }) {
+/** Quita del objeto del backend lo que no son datos clínicos (curp, versión, hash, fechas). */
+function withoutMeta({ id, curp, version, hash, actualizadoEn, creadoEn, elaboradoPor, completa, faltantes, ...data }) {
   return data;
 }
 
 /**
- * Pestaña "Antecedentes" (recepción/enfermería y médico): antecedentes del paciente en MySQL.
- * Devuelve {} si todavía no tiene.
+ * Antecedentes del paciente en MySQL (pestaña "Antecedentes" y panel "Historiales" de la nota SOAP).
+ * Se guardan por VERSIONES: devuelve la vigente, con { version, hash, creadoEn, ... }, o null si
+ * todavía no tiene.
  */
 export async function getAntecedentes(patientId) {
   requireRole(ROLES.RECEPCION, ROLES.MEDICO);
@@ -530,26 +531,41 @@ export async function getAntecedentes(patientId) {
   const curp = requirePatientCurp(patient);
   try {
     const { antecedentes } = await backend('GET', '/api/antecedentes', { curp });
-    return withoutMeta(antecedentes);
+    return antecedentes;
   } catch (error) {
-    if (error.code === 'NOT_FOUND') return {};
+    if (error.code === 'NOT_FOUND') return null;
     throw error;
   }
 }
 
-/** Guarda (reemplaza) los antecedentes del paciente en MySQL; deja una copia local para el médico. */
-export async function updateAntecedentes(patientId, antecedentes) {
+/** Todas las versiones de los antecedentes, la más reciente primero. */
+export async function getAntecedentesHistorial(patientId) {
   requireRole(ROLES.RECEPCION, ROLES.MEDICO);
+  const patient = findPatient(loadDb(), patientId);
+  const { historial } = await backend('GET', '/api/antecedentes', { curp: requirePatientCurp(patient), query: { historial: '1' } });
+  return historial;
+}
+
+/**
+ * Guarda una versión nueva de los antecedentes (el backend no crea otra si nada cambió:
+ * `sinCambios` = true). Deja una copia local para la consulta del médico.
+ * @returns {Promise<{ antecedentes: object, sinCambios: boolean }>}
+ */
+export async function updateAntecedentes(patientId, antecedentes) {
+  const user = requireRole(ROLES.RECEPCION, ROLES.MEDICO);
   const db = loadDb();
   const patient = findPatient(db, patientId);
   const curp = requirePatientCurp(patient);
 
-  const saved = await backend('POST', '/api/antecedentes', { body: { curp, ...antecedentes } });
+  // Autor de la versión (NOM-004 5.10, NOM-024 5.1.5): el usuario de la sesión. Cuando el backend
+  // tenga autenticación lo tomará del token en vez de confiar en este campo.
+  const elaboradoPor = { nombre: user.nombre, rol: user.rol };
+  const saved = await backend('POST', '/api/antecedentes', { body: { curp, ...antecedentes, elaboradoPor } });
 
   patient.antecedentes = withoutMeta(saved.antecedentes);
   patient.actualizadoAt = nowIso();
   saveDb(db);
-  return clone(patient.antecedentes);
+  return { antecedentes: saved.antecedentes, sinCambios: saved.sinCambios };
 }
 
 // ---------------------------------------------------------------------------
@@ -561,7 +577,8 @@ export async function listSoapNotes(patientId) {
   requireRole(ROLES.RECEPCION, ROLES.MEDICO);
   const patient = findPatient(loadDb(), patientId);
   const { notas } = await backend('GET', '/api/notaSoap', { curp: requirePatientCurp(patient) });
-  return notas.map(({ id, fechaServicio, horaServicio, creadoEn, curp, ...data }) => ({ id, fechaServicio, horaServicio, creadoEn, data }));
+  return notas.map(({ id, fechaServicio, horaServicio, creadoEn, curp, antecedentesRef, ...data }) =>
+    ({ id, fechaServicio, horaServicio, creadoEn, antecedentesRef, data }));
 }
 
 /**

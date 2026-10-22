@@ -321,6 +321,24 @@ button, input, select, textarea { font-family: inherit; letter-spacing: inherit;
 .soap-fieldset { border: 0; padding: 0; margin: 0 0 14px; }
 .soap-fieldset > legend { font-size: 14px; font-weight: 600; padding: 0; margin-bottom: 6px; color: var(--c-text-label); }
 
+/* Antecedentes (antecedentesEditor.js): matriz heredo-familiar y casillas */
+.ant-matrix-wrap { overflow-x: auto; margin: 0 0 12px; }
+.ant-matrix { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ant-matrix th, .ant-matrix td { padding: 6px 8px; border-bottom: 1px solid var(--c-border); }
+.ant-matrix thead th { font-size: 12px; font-weight: 600; color: var(--c-text-label); text-align: center; }
+.ant-matrix tbody th { font-weight: 400; text-align: left; }
+.ant-matrix td { text-align: center; }
+.ant-matrix input, .ant-check input { width: 17px; height: 17px; cursor: pointer; }
+.ant-checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 16px; }
+.ant-check { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+.ant-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 0 0 10px; }
+.ant-aviso { margin: 0 0 12px; padding: 10px 12px; border-radius: 5px; font-size: 14px; background: var(--c-warn-bg); color: var(--c-warn-text); }
+.ant-banner { margin: 10px 0 18px; padding: 8px 12px; border-radius: 5px; font-size: 14px; overflow-wrap: anywhere; }
+.ant-banner.bad { background: var(--c-bad-bg); color: var(--c-bad-text); }
+.ant-banner.ok { background: var(--c-ok-bg); color: var(--c-ok-text); }
+.ant-banner.warn { background: var(--c-warn-bg); color: var(--c-warn-text); }
+.ant-row .fig-link { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: var(--c-danger-hover); }
+
 /* =====================================================================
    Controles de formulario (forma del Figma; colores de los otros frontends)
    ===================================================================== */

@@ -3,6 +3,10 @@
 //
 // Una nota es SOLO-AGREGAR: hay POST (crear) y GET (consultar), pero no PUT ni DELETE. Es lo que
 // exige un expediente clínico (lo escrito no se altera) y lo que después garantizará la blockchain.
+//
+// La nota NO copia los antecedentes: guarda `antecedentes_id`, la versión de antecedentes vigente
+// cuando se creó (la pone el servidor, no el cliente). Así cada nota dice qué se sabía del paciente
+// ese día sin duplicar datos (ni gas).
 const pool = require('../db');
 const { NOTA_SOAP_FIELDS, SERVICIO_FIELDS } = require('./notaSoapFields');
 const { ValidationError, requiredCurp, validateField, getPath, setPath, sendError } = require('./validation');
@@ -37,6 +41,11 @@ function validateNota(body) {
   return { curp, values };
 }
 
+// Columnas de la nota + la versión y hash de los antecedentes a los que apunta.
+const SELECT_NOTAS = `
+  SELECT n.*, a.version AS antecedentes_version, a.hash AS antecedentes_hash
+  FROM nota_soap n LEFT JOIN antecedentes a ON a.id = n.antecedentes_id`;
+
 // Fila MySQL -> JSON con los nombres y objetos del Excel (signosVitales.temperatura, ...).
 function toApiShape(row) {
   const nota = { id: row.id, curp: row.curp };
@@ -48,6 +57,10 @@ function toApiShape(row) {
     if (field.type === 'time') value = String(value).slice(0, 5); // 'hh:mm:ss' -> 'hh:mm'
     setPath(nota, field.path, value);
   }
+  // null = la nota se hizo cuando el paciente aún no tenía antecedentes registrados.
+  nota.antecedentesRef = row.antecedentes_id
+    ? { id: row.antecedentes_id, version: row.antecedentes_version, hash: row.antecedentes_hash }
+    : null;
   nota.creadoEn = row.creado_en;
   return nota;
 }
@@ -56,11 +69,15 @@ function toApiShape(row) {
 async function createNota(req, res) {
   try {
     const { curp, values } = validateNota(req.body || {});
-    const [result] = await pool.query(
-      `INSERT INTO nota_soap (curp, ${COLUMNS.join(', ')}) VALUES (?, ${COLUMNS.map(() => '?').join(', ')})`,
-      [curp, ...COLUMNS.map((column) => values[column])]
+    const [latest] = await pool.query(
+      'SELECT id FROM antecedentes WHERE curp = ? ORDER BY version DESC LIMIT 1', [curp]
     );
-    const [rows] = await pool.query('SELECT * FROM nota_soap WHERE id = ?', [result.insertId]);
+    const antecedentesId = latest.length > 0 ? latest[0].id : null;
+    const [result] = await pool.query(
+      `INSERT INTO nota_soap (curp, antecedentes_id, ${COLUMNS.join(', ')}) VALUES (?, ?, ${COLUMNS.map(() => '?').join(', ')})`,
+      [curp, antecedentesId, ...COLUMNS.map((column) => values[column])]
+    );
+    const [rows] = await pool.query(`${SELECT_NOTAS} WHERE n.id = ?`, [result.insertId]);
     res.status(201).json({ Result: 'Success', nota: toApiShape(rows[0]) });
   } catch (error) {
     // FOREIGN KEY: la CURP debe existir en ficha_identificacion.
@@ -75,7 +92,7 @@ async function createNota(req, res) {
 async function getNotas(req, res) {
   try {
     const curp = requiredCurp(req.query.curp);
-    const [rows] = await pool.query('SELECT * FROM nota_soap WHERE curp = ? ORDER BY id DESC', [curp]);
+    const [rows] = await pool.query(`${SELECT_NOTAS} WHERE n.curp = ? ORDER BY n.id DESC`, [curp]);
     res.status(200).json({ Result: 'Success', notas: rows.map(toApiShape) });
   } catch (error) {
     sendError(res, error);

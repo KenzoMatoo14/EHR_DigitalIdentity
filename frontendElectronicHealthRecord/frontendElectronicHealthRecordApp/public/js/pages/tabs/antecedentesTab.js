@@ -1,14 +1,31 @@
 /*
- * antecedentesTab.js — pestaña "Antecedentes" (recepción/enfermería y médico). El Figma la nombra pero
- * no la diseña, así que usa los campos de antecedentes del Excel Norm04 (NOM-004 6.1.1) y el mismo
- * estilo de tarjetas que la consulta. Son datos del PACIENTE (evolucionan con el tiempo), no de una
- * nota: se guardan en MySQL, una fila por CURP (guardar otra vez reemplaza).
+ * antecedentesTab.js — pestaña "Antecedentes" (recepción/enfermería y médico).
+ *
+ * Arriba, el editor (antecedentesEditor.js): alergias primero (NOM-024 1.3.6), luego heredo-
+ * familiares, patológicos (con uso y dependencia de sustancias), no patológicos y los opcionales.
+ * Abajo, el HISTORIAL: cada guardado con cambios es una versión nueva en MySQL (solo-agregar), y
+ * aquí se pueden consultar todas. La nota SOAP apunta a la versión vigente al momento de la visita.
  */
 
-import { getAntecedentes, updateAntecedentes } from '/js/core/api.js';
-import { toast } from '/js/core/ui.js';
-import { NOTE_TYPES, ANTECEDENTES_KEYS } from '/js/data/schema.js';
-import { renderFields, readValues, validateForm } from '/js/core/formRenderer.js';
+import { getAntecedentes, getAntecedentesHistorial } from '/js/core/api.js';
+import { escapeHtml, formatDateTime } from '/js/core/ui.js';
+import { mountEditor, summaryHtml, versionText } from '/js/pages/tabs/antecedentesEditor.js';
+
+function historialHtml(versions) {
+  if (versions.length === 0) return '<p class="soap-hint">Sin versiones todavía.</p>';
+  return versions.map((v, index) => `
+    <details class="soap-note">
+      <summary>
+        <strong>Versión ${escapeHtml(v.version)}</strong>
+        <span class="soap-hint"> ${escapeHtml(formatDateTime(v.creadoEn))}${index === 0 ? ' · vigente' : ''}</span>
+      </summary>
+      <div style="padding-top:10px">
+        <p class="soap-hint" style="margin:0 0 8px">${escapeHtml(versionText(v))}</p>
+        ${summaryHtml(v)}
+        <p class="soap-hint" style="margin:0;overflow-wrap:anywhere">Hash SHA-256: <code>${escapeHtml(v.hash)}</code></p>
+      </div>
+    </details>`).join('');
+}
 
 /** @param {HTMLElement} container @param {{patient: object}} ctx */
 export async function render(container, { patient }) {
@@ -21,39 +38,21 @@ export async function render(container, { patient }) {
     return;
   }
 
-  const fields = NOTE_TYPES.historiaClinica.fields.filter((f) => ANTECEDENTES_KEYS.includes(f.key));
-
   container.innerHTML = `
-    <form id="antForm" novalidate style="padding-top:10px">
-      <details class="consulta-card" open>
-        <summary>
-          <span><span class="num">6.1.1</span>Antecedentes</span>
-          <span class="chev" aria-hidden="true">▶</span>
-        </summary>
-        <div class="card-body"><div data-fields class="soap-cols"></div></div>
-      </details>
-      <p class="fig-modal-error hidden" data-error role="alert"></p>
-      <div class="soap-actions"><button type="submit" class="fig-btn fig-btn-accept">Guardar</button></div>
-    </form>`;
+    <p class="soap-hint" style="margin:12px 0 0">Cada vez que guardas con cambios se crea una versión nueva; las anteriores se conservan en el historial.</p>
+    <div id="antEditor" style="padding-top:10px"></div>
+    <section style="padding:0 0 30px">
+      <h2 class="consulta-h" style="margin:0 0 10px">Historial de versiones</h2>
+      <div id="antHistorial"><p class="soap-hint">Cargando…</p></div>
+    </section>`;
 
-  const box = container.querySelector('[data-fields]');
-  const errorBox = container.querySelector('[data-error]');
-  renderFields(box, fields, await getAntecedentes(patient.id));
+  const historialBox = container.querySelector('#antHistorial');
+  const refreshHistorial = async () => { historialBox.innerHTML = historialHtml(await getAntecedentesHistorial(patient.id)); };
 
-  container.querySelector('#antForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    errorBox.classList.add('hidden');
-    if (validateForm(box, fields).length > 0) return;
-    const button = container.querySelector('button[type="submit"]');
-    button.disabled = true;
-    try {
-      await updateAntecedentes(patient.id, readValues(box, fields));
-      toast('Antecedentes guardados.', 'success');
-    } catch (error) {
-      errorBox.textContent = error.message;
-      errorBox.classList.remove('hidden');
-    } finally {
-      button.disabled = false;
-    }
+  mountEditor(container.querySelector('#antEditor'), {
+    patient,
+    saved: await getAntecedentes(patient.id),
+    onSaved: refreshHistorial,
   });
+  await refreshHistorial();
 }

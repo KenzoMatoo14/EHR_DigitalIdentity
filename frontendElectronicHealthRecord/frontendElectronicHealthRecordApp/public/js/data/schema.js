@@ -346,14 +346,12 @@ export const SOAP_PANELS = Object.freeze([
       noteField('historiaClinica', 'talla'),
     ],
   },
+  // Sin campos propios: los antecedentes ya no se copian en cada nota. El panel muestra los
+  // antecedentes vigentes (solo lectura) y permite actualizarlos; la nota guarda a qué versión
+  // apunta. Ver pages/tabs/soapForm.js y antecedentesEditor.js.
   {
-    id: 'historiales', title: 'Historiales', column: 'right',
-    fields: [
-      noteField('historiaClinica', 'antecedentesHeredoFamiliares'),
-      noteField('historiaClinica', 'antecedentesPersonalesPatologicos'),
-      noteField('historiaClinica', 'antecedentesPersonalesNoPatologicos'),
-      noteField('historiaClinica', 'consumoSustancias'),
-    ],
+    id: 'historiales', title: 'Historiales (antecedentes)', column: 'right', antecedentes: true,
+    fields: [],
   },
   {
     id: 'exploracionFisica', title: 'Exploración física (Observaciones)', column: 'left',
@@ -390,10 +388,3 @@ export const SOAP_PANELS = Object.freeze([
   },
 ]);
 
-/** Campos de antecedentes (hoja 6.1.1): pestaña "Antecedentes" y panel "Historiales" del SOAP. */
-export const ANTECEDENTES_KEYS = Object.freeze([
-  'antecedentesHeredoFamiliares',
-  'antecedentesPersonalesPatologicos',
-  'antecedentesPersonalesNoPatologicos',
-  'consumoSustancias',
-]);

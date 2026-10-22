@@ -16,6 +16,10 @@
     {
       "key": "folio",
       "value": "0263328"
+    },
+    {
+      "key": "antecedentesVersion",
+      "value": ""
     }
   ],
   "item": [
@@ -102,16 +106,23 @@
           }
         },
         {
-          "name": "3. Guardar antecedentes",
+          "name": "3. Guardar antecedentes (crea versión)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "// 201 = se creó una versión nueva; 200 = era igual a la última (al volver a correr la colección).",
+                  "pm.test('Status 201 o 200', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
                   "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
-                  "pm.test('Booleano guardado', () => pm.expect(pm.response.json().antecedentes.consumoSustancias.usoAlcohol).to.eql(true));"
+                  "const a = pm.response.json().antecedentes;",
+                  "pm.test('Tiene versión y hash', () => { pm.expect(a.version).to.be.above(0); pm.expect(a.hash).to.have.lengthOf(64); });",
+                  "pm.test('Matriz heredo-familiar ordenada por catálogo', () => pm.expect(a.heredoFamiliares[0]).to.eql({ padecimiento: 'DM', parentesco: 'MADRE' }));",
+                  "pm.collectionVariables.set('antecedentesVersion', a.version);",
+                  "// Solo si se creó una versión nueva: con 200 (sin cambios) se conserva el autor de la versión anterior.",
+                  "if (pm.response.code === 201) pm.test('Autor registrado', () => pm.expect(a.elaboradoPor.nombre).to.eql('Enfermera de prueba'));",
+                  "pm.test('Historia clínica completa (sin faltantes)', () => pm.expect(a.faltantes).to.have.lengthOf(0));"
                 ]
               }
             }
@@ -135,7 +146,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"antecedentesHeredoFamiliares\": \"Madre con diabetes tipo 2\",\n  \"antecedentesPersonalesPatologicos\": \"Asma en la infancia\",\n  \"antecedentesPersonalesNoPatologicos\": \"Ejercicio 3 veces por semana\",\n  \"consumoSustancias\": {\n    \"usoTabaco\": false,\n    \"usoAlcohol\": true\n  }\n}",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"alergias\": {\n    \"niega\": false,\n    \"lista\": [\n      {\n        \"agente\": \"MEDICAMENTO\",\n        \"medicamento\": \"Penicilina\",\n        \"tipoReaccion\": \"CUTANEA\",\n        \"descripcion\": \"Ronchas en brazos\",\n        \"fechaDeteccion\": \"2019-03-10\",\n        \"verificada\": true\n      },\n      {\n        \"agente\": \"POLEN\",\n        \"tipoReaccion\": \"RESPIRATORIA\",\n        \"verificada\": false\n      }\n    ]\n  },\n  \"heredoFamiliares\": [\n    {\n      \"padecimiento\": \"DM\",\n      \"parentesco\": \"MADRE\"\n    },\n    {\n      \"padecimiento\": \"HAS\",\n      \"parentesco\": \"PADRE\"\n    },\n    {\n      \"padecimiento\": \"DM\",\n      \"parentesco\": \"ABUELOS\"\n    }\n  ],\n  \"heredoFamiliaresDetalle\": \"Abuela materna con diabetes tipo 2\",\n  \"patologicos\": [\n    \"QUIRURGICOS\",\n    \"RESPIRATORIAS\"\n  ],\n  \"patologicosDetalle\": \"Apendicectomía en 2018. Asma en la infancia, sin crisis desde 2015\",\n  \"consumoSustancias\": {\n    \"tabaco\": \"NO\",\n    \"alcohol\": \"USO\",\n    \"otrasSustancias\": \"NO\"\n  },\n  \"noPatologicos\": \"Ejercicio 3 veces por semana; duerme 7 h; vive con su familia\",\n  \"discapacidades\": [],\n  \"elaboradoPor\": {\n    \"nombre\": \"Enfermera de prueba\",\n    \"rol\": \"recepcion\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -145,7 +156,7 @@
           }
         },
         {
-          "name": "4. Consultar antecedentes",
+          "name": "3b. Guardar lo mismo otra vez -> sin versión nueva",
           "event": [
             {
               "listen": "test",
@@ -153,7 +164,52 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Status 200', () => pm.response.to.have.status(200));",
-                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));"
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
+                  "pm.test('sinCambios = true', () => pm.expect(pm.response.json().sinCambios).to.eql(true));",
+                  "pm.test('Misma versión', () => pm.expect(pm.response.json().antecedentes.version).to.eql(Number(pm.collectionVariables.get('antecedentesVersion'))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/antecedentes",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"alergias\": {\n    \"niega\": false,\n    \"lista\": [\n      {\n        \"agente\": \"MEDICAMENTO\",\n        \"medicamento\": \"Penicilina\",\n        \"tipoReaccion\": \"CUTANEA\",\n        \"descripcion\": \"Ronchas en brazos\",\n        \"fechaDeteccion\": \"2019-03-10\",\n        \"verificada\": true\n      },\n      {\n        \"agente\": \"POLEN\",\n        \"tipoReaccion\": \"RESPIRATORIA\",\n        \"verificada\": false\n      }\n    ]\n  },\n  \"heredoFamiliares\": [\n    {\n      \"padecimiento\": \"DM\",\n      \"parentesco\": \"MADRE\"\n    },\n    {\n      \"padecimiento\": \"HAS\",\n      \"parentesco\": \"PADRE\"\n    },\n    {\n      \"padecimiento\": \"DM\",\n      \"parentesco\": \"ABUELOS\"\n    }\n  ],\n  \"heredoFamiliaresDetalle\": \"Abuela materna con diabetes tipo 2\",\n  \"patologicos\": [\n    \"QUIRURGICOS\",\n    \"RESPIRATORIAS\"\n  ],\n  \"patologicosDetalle\": \"Apendicectomía en 2018. Asma en la infancia, sin crisis desde 2015\",\n  \"consumoSustancias\": {\n    \"tabaco\": \"NO\",\n    \"alcohol\": \"USO\",\n    \"otrasSustancias\": \"NO\"\n  },\n  \"noPatologicos\": \"Ejercicio 3 veces por semana; duerme 7 h; vive con su familia\",\n  \"discapacidades\": [],\n  \"elaboradoPor\": {\n    \"nombre\": \"Enfermera de prueba\",\n    \"rol\": \"recepcion\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4. Consultar antecedentes (versión vigente)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
+                  "pm.test('Alergias primero en la respuesta', () => pm.expect(pm.response.json().antecedentes.alergias.lista).to.have.lengthOf(2));"
                 ]
               }
             }
@@ -179,6 +235,45 @@
           }
         },
         {
+          "name": "4b. Historial de versiones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
+                  "pm.test('Lista de versiones, la más reciente primero', () => { const h = pm.response.json().historial; pm.expect(h.length).to.be.above(0); if (h.length > 1) pm.expect(h[0].version).to.be.above(h[1].version); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway}}/antecedentes?curp={{curp}}&historial=1",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ],
+              "query": [
+                {
+                  "key": "curp",
+                  "value": "{{curp}}"
+                },
+                {
+                  "key": "historial",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "5. Agregar nota SOAP (todos los paneles)",
           "event": [
             {
@@ -189,7 +284,9 @@
                   "pm.test('Status 201', () => pm.response.to.have.status(201));",
                   "pm.test('Result = Success', () => pm.expect(pm.response.json().Result).to.eql('Success'));",
                   "pm.test('Temperatura guardada', () => pm.expect(pm.response.json().nota.signosVitales.temperatura).to.eql(36.5));",
-                  "pm.test('Fecha y hora automáticas', () => { const n = pm.response.json().nota; pm.expect(n.fechaServicio).to.have.lengthOf(10); pm.expect(n.horaServicio).to.have.lengthOf(5); });"
+                  "pm.test('Fecha y hora automáticas', () => { const n = pm.response.json().nota; pm.expect(n.fechaServicio).to.have.lengthOf(10); pm.expect(n.horaServicio).to.have.lengthOf(5); });",
+                  "pm.test('Apunta a la versión vigente de antecedentes', () => pm.expect(pm.response.json().nota.antecedentesRef.version).to.eql(Number(pm.collectionVariables.get('antecedentesVersion'))));",
+                  "pm.test('La nota no copia antecedentes', () => pm.expect(pm.response.json().nota).to.not.have.property('consumoSustancias'));"
                 ]
               }
             }
@@ -213,7 +310,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"motivoAtencion\": \"Dolor de cabeza\",\n  \"padecimientoActual\": \"Cefalea frontal de 2 días\",\n  \"evolucionCuadroClinico\": \"Sin cambios desde ayer\",\n  \"interrogatorioAparatosSistemas\": \"Sin datos relevantes\",\n  \"resumenInterrogatorio\": \"Cefalea tensional probable\",\n  \"tratamientoPrevio\": {\n    \"tratamientoPrevioConvencional\": \"Paracetamol 500 mg\",\n    \"tratamientoPrevioAlternativo\": \"Ninguno\",\n    \"tratamientoPrevioTradicional\": \"Té de manzanilla\"\n  },\n  \"signosVitales\": {\n    \"temperatura\": 36.5,\n    \"tensionArterial\": \"120/80\",\n    \"frecuenciaCardiaca\": 72,\n    \"frecuenciaRespiratoria\": 16\n  },\n  \"peso\": 70.5,\n  \"talla\": 1.75,\n  \"antecedentesHeredoFamiliares\": \"Madre con diabetes tipo 2\",\n  \"antecedentesPersonalesPatologicos\": \"Asma en la infancia\",\n  \"antecedentesPersonalesNoPatologicos\": \"Ejercicio 3 veces por semana\",\n  \"consumoSustancias\": {\n    \"usoTabaco\": false,\n    \"usoAlcohol\": true,\n    \"usoOtrasSustancias\": false\n  },\n  \"habitusExterior\": \"Consciente, orientado, cooperador\",\n  \"datosExploracionFisica\": {\n    \"cabeza\": \"Normocéfalo\",\n    \"cuello\": \"Sin adenopatías\",\n    \"torax\": \"Campos pulmonares limpios\",\n    \"abdomen\": \"Blando, no doloroso\",\n    \"miembros\": \"Íntegros\",\n    \"genitales\": \"No explorados\"\n  },\n  \"resumenExploracionFisica\": \"Exploración sin alteraciones\",\n  \"estadoMental\": \"Alerta\",\n  \"diagnosticosProblemasClinicos\": \"Cefalea tensional\",\n  \"pronostico\": \"Bueno para la vida y la función\",\n  \"indicacionTerapeutica\": \"Reposo e hidratación\",\n  \"tratamientoIndicacionesMedicas\": \"Paracetamol vía oral\",\n  \"tratamientoIndicaciones\": {\n    \"dosis\": \"500 mg\",\n    \"viaAdministracion\": \"Oral\",\n    \"periodicidad\": \"Cada 8 h por 3 días\"\n  },\n  \"tratamiento\": \"Analgésico y reposo\",\n  \"resultadosPreviosEstudios\": {\n    \"laboratorio\": \"BH normal (2025)\",\n    \"gabinete\": \"Ninguno\",\n    \"otros\": \"Ninguno\"\n  },\n  \"resultadosActualesEstudios\": {\n    \"laboratorio\": \"No se solicitaron\",\n    \"gabinete\": \"Ninguno\",\n    \"otros\": \"Ninguno\"\n  },\n  \"resultadosEstudiosAuxiliares\": \"Ninguno\"\n}",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"motivoAtencion\": \"Dolor de cabeza\",\n  \"padecimientoActual\": \"Cefalea frontal de 2 días\",\n  \"evolucionCuadroClinico\": \"Sin cambios desde ayer\",\n  \"interrogatorioAparatosSistemas\": \"Sin datos relevantes\",\n  \"resumenInterrogatorio\": \"Cefalea tensional probable\",\n  \"tratamientoPrevio\": {\n    \"tratamientoPrevioConvencional\": \"Paracetamol 500 mg\",\n    \"tratamientoPrevioAlternativo\": \"Ninguno\",\n    \"tratamientoPrevioTradicional\": \"Té de manzanilla\"\n  },\n  \"signosVitales\": {\n    \"temperatura\": 36.5,\n    \"tensionArterial\": \"120/80\",\n    \"frecuenciaCardiaca\": 72,\n    \"frecuenciaRespiratoria\": 16\n  },\n  \"peso\": 70.5,\n  \"talla\": 1.75,\n  \"habitusExterior\": \"Consciente, orientado, cooperador\",\n  \"datosExploracionFisica\": {\n    \"cabeza\": \"Normocéfalo\",\n    \"cuello\": \"Sin adenopatías\",\n    \"torax\": \"Campos pulmonares limpios\",\n    \"abdomen\": \"Blando, no doloroso\",\n    \"miembros\": \"Íntegros\",\n    \"genitales\": \"No explorados\"\n  },\n  \"resumenExploracionFisica\": \"Exploración sin alteraciones\",\n  \"estadoMental\": \"Alerta\",\n  \"diagnosticosProblemasClinicos\": \"Cefalea tensional\",\n  \"pronostico\": \"Bueno para la vida y la función\",\n  \"indicacionTerapeutica\": \"Reposo e hidratación\",\n  \"tratamientoIndicacionesMedicas\": \"Paracetamol vía oral\",\n  \"tratamientoIndicaciones\": {\n    \"dosis\": \"500 mg\",\n    \"viaAdministracion\": \"Oral\",\n    \"periodicidad\": \"Cada 8 h por 3 días\"\n  },\n  \"tratamiento\": \"Analgésico y reposo\",\n  \"resultadosPreviosEstudios\": {\n    \"laboratorio\": \"BH normal (2025)\",\n    \"gabinete\": \"Ninguno\",\n    \"otros\": \"Ninguno\"\n  },\n  \"resultadosActualesEstudios\": {\n    \"laboratorio\": \"No se solicitaron\",\n    \"gabinete\": \"Ninguno\",\n    \"otros\": \"Ninguno\"\n  },\n  \"resultadosEstudiosAuxiliares\": \"Ninguno\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -550,7 +647,7 @@
           }
         },
         {
-          "name": "Booleano inválido en antecedentes -> 400",
+          "name": "Consumo fuera de catálogo -> 400",
           "event": [
             {
               "listen": "test",
@@ -582,7 +679,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"consumoSustancias\": {\n    \"usoTabaco\": \"quizas\"\n  }\n}",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"consumoSustancias\": {\n    \"tabaco\": \"A VECES\"\n  },\n  \"elaboradoPor\": {\n    \"nombre\": \"Enfermera de prueba\",\n    \"rol\": \"recepcion\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -656,6 +753,216 @@
                   "value": "ABC"
                 }
               ]
+            }
+          }
+        },
+        {
+          "name": "Niega alergias pero manda lista -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/antecedentes",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"alergias\": {\n    \"niega\": true,\n    \"lista\": [\n      {\n        \"agente\": \"POLEN\"\n      }\n    ]\n  },\n  \"elaboradoPor\": {\n    \"nombre\": \"Enfermera de prueba\",\n    \"rol\": \"recepcion\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Alergia a medicamento sin nombre -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/antecedentes",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"alergias\": {\n    \"lista\": [\n      {\n        \"agente\": \"MEDICAMENTO\"\n      }\n    ]\n  },\n  \"elaboradoPor\": {\n    \"nombre\": \"Enfermera de prueba\",\n    \"rol\": \"recepcion\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Gineco-obstétricos en paciente hombre -> 400 (la CURP de ejemplo es H)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/antecedentes",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"ginecoObstetricos\": {\n    \"menarca\": 12\n  },\n  \"elaboradoPor\": {\n    \"nombre\": \"Enfermera de prueba\",\n    \"rol\": \"recepcion\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Antecedentes sin autor (elaboradoPor) -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/antecedentes",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"noPatologicos\": \"Ejercicio diario\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Negados con datos capturados -> 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Result = Error', () => pm.expect(pm.response.json().Result).to.eql('Error'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{gateway}}/antecedentes",
+              "host": [
+                "{{gateway}}"
+              ],
+              "path": [
+                "antecedentes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"curp\": \"{{curp}}\",\n  \"patologicosNegados\": true,\n  \"patologicos\": [\n    \"HAS\"\n  ],\n  \"elaboradoPor\": {\n    \"nombre\": \"Enfermera de prueba\",\n    \"rol\": \"recepcion\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           }
         }

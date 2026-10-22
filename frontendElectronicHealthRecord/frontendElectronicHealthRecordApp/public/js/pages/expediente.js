@@ -14,7 +14,8 @@
 
 import { ROLES } from '/js/core/config.js';
 import { requireSession, homeFor } from '/js/core/session.js';
-import { getPatient } from '/js/core/api.js';
+import { getPatient, getAntecedentes } from '/js/core/api.js';
+import { alergiasOrdenadas, alergiaText } from '/js/pages/tabs/antecedentesEditor.js';
 import { mountShell, escapeHtml, getQueryParam, reportError } from '/js/core/ui.js';
 import { renderVisitSummary } from '/js/pages/tabs/visitSummary.js';
 import { render as renderFicha } from '/js/pages/tabs/fichaTab.js';
@@ -42,6 +43,30 @@ function renderTabs(visibleTabs, active, patientId, folio) {
     return `<a class="fig-tab ${tab.id === active ? 'active' : ''}" href="/expediente?${params}" ${tab.id === active ? 'aria-current="page"' : ''}>${escapeHtml(tab.label)}</a>`;
   }).join('');
   nav.classList.remove('hidden');
+}
+
+/**
+ * Alergias visibles en cualquier pestaña del expediente (NOM-024 1.3.3: alergias y reacciones
+ * adversas como primera vista de la información del paciente, las más severas primero).
+ * Si falla la consulta no rompe la página: solo no se muestra.
+ */
+async function renderAlergiasBanner(box, patient) {
+  if (!patient.curp) return;
+  try {
+    const saved = await getAntecedentes(patient.id);
+    const lista = alergiasOrdenadas(saved);
+    let html;
+    if (lista.length > 0) {
+      html = `<div class="ant-banner bad"><strong>Alergias:</strong> ${lista.map((al) => escapeHtml(alergiaText(al))).join(' · ')}</div>`;
+    } else if (saved && saved.alergias.niega === true) {
+      html = '<div class="ant-banner ok"><strong>Alergias:</strong> niega alergias</div>';
+    } else {
+      html = '<div class="ant-banner warn"><strong>Alergias:</strong> sin dato (no se ha preguntado)</div>';
+    }
+    box.innerHTML = html;
+  } catch (error) {
+    box.innerHTML = '';
+  }
 }
 
 async function main() {
@@ -73,8 +98,10 @@ async function main() {
         <h1 class="fig-title">${escapeHtml(fullName(patient).toUpperCase())}</h1>
         <p class="fig-subtitle">Expediente - ${escapeHtml(patient.expediente)}</p>
       </div>
-    </div>`;
+    </div>
+    <div id="alergiasBanner"></div>`;
   renderTabs(visibleTabs, tab.id, patient.id, folio);
+  renderAlergiasBanner($('alergiasBanner'), patient); // sin await: no retrasa la pestaña
 
   await tab.render($('tabBody'), { user, patient, folio });
 }

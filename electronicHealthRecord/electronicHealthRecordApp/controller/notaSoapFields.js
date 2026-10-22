@@ -17,7 +17,6 @@
 const text = (path, column, label, max, panel, extra = {}) => ({ path, column, label, type: 'text', max, panel, ...extra });
 const decimal = (path, column, label, precision, scale, panel, extra = {}) => ({ path, column, label, type: 'decimal', precision, scale, panel, ...extra });
 const integer = (path, column, label, panel, extra = {}) => ({ path, column, label, type: 'integer', panel, ...extra });
-const boolean = (path, column, label, panel) => ({ path, column, label, type: 'boolean', panel });
 
 const NOTA_SOAP_FIELDS = Object.freeze([
   // ===== Subjetivo (motivos de la consulta) =====
@@ -45,13 +44,9 @@ const NOTA_SOAP_FIELDS = Object.freeze([
   decimal(['talla'], 'talla', 'Talla (m)', 4, 2, 'signosVitales', { min: 0.3, max: 2.5 }), // 6.1.2
 
   // ===== Historiales =====
-  text(['antecedentesHeredoFamiliares'], 'antecedentes_heredo_familiares', 'Antecedentes heredo-familiares', 500, 'historiales'), // 6.1.1
-  text(['antecedentesPersonalesPatologicos'], 'antecedentes_personales_patologicos', 'Antecedentes personales patológicos', 500, 'historiales'),
-  text(['antecedentesPersonalesNoPatologicos'], 'antecedentes_personales_no_patologicos', 'Antecedentes personales no patológicos', 500, 'historiales'),
-  // Objeto ConsumoSustancias (6.1.1 y 6.2.1)
-  boolean(['consumoSustancias', 'usoTabaco'], 'uso_tabaco', 'Uso de tabaco', 'historiales'),
-  boolean(['consumoSustancias', 'usoAlcohol'], 'uso_alcohol', 'Uso de alcohol', 'historiales'),
-  boolean(['consumoSustancias', 'usoOtrasSustancias'], 'uso_otras_sustancias', 'Uso de otras sustancias', 'historiales'),
+  // Los antecedentes (6.1.1) y el consumo de sustancias (6.1.1 / 6.2.1) ya NO se copian en cada
+  // nota: viven en la tabla `antecedentes` (por versiones) y la nota guarda `antecedentes_id`, la
+  // versión vigente al momento de la visita. Ver antecedentesController.js.
 
   // ===== Exploración física (observaciones) =====
   text(['habitusExterior'], 'habitus_exterior', 'Habitus exterior', 500, 'exploracionFisica'), // 6.1.2
